@@ -10,7 +10,7 @@
     
     }
 
-    console.log(password);
+    // console.log(password);
     
     try {
     
@@ -29,7 +29,7 @@
             })
         });
 
-        console.log(res);
+        // console.log(res);
     
         if (!res.ok) {
             if (res.status === 401 || res.status === 403) {
