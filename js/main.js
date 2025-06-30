@@ -42,6 +42,8 @@
         }
     
         let data = await res.json();
+
+        console.log(data)
         
         // Group data by platform and province
         const groupedData = {};
@@ -153,39 +155,78 @@
 
         function renderAttritionFlow() {
             const steps = [
-                'Clicked ad.',
-                'Eligible.',
-                'Completed survey.',
-                'Logged into app.',
-                'App data collected.',
-                'Paid.'
+                { 'key': 'surveyCompletedScreen',       'label': 'Completed screening questions' },
+                { 'key': 'eligible',                    'label': 'Eligible' },
+                { 'key': 'surveyCompleted',             'label': 'Completed survey' },
+                { 'key': 'appPhoneNumberEntered',       'label': 'Entered phone number in app' },
+                { 'key': 'appPlatformLoggedIn',         'label': 'Logged in to platform' },
+                { 'key': 'appDataReceived',             'label': 'Platform data received' },
+                { 'key': 'paid',                        'label': 'Paid' }
             ];
-            // Generate random numbers for each step, strictly decreasing
-            let counts = [Math.floor(Math.random() * 101) + 100]; // 100-200
-            for (let i = 1; i < steps.length; i++) {
-                counts[i] = Math.floor(counts[i-1] * (0.5 + Math.random() * 0.4)); // 50-90% of previous
-            }
-            // Calculate attrition percentages between steps
-            let attritions = [];
-            for (let i = 1; i < counts.length; i++) {
-                let perc = Math.round(((counts[i] - counts[i-1]) / counts[i-1]) * 100);
-                attritions.push(perc);
-            }
-            // Build HTML
-            let html = '<div class="attrition-flowchart">';
-            for (let i = 0; i < steps.length; i++) {
-                html += `<div class="attrition-step">`;
-                html += `<div>${steps[i]}</div>`;
-                html += `<div class="attrition-count">${counts[i]}</div>`;
-                html += '</div>';
-                if (i < steps.length - 1) {
-                    // Curvy arrow SVG with attrition label
-                    let attr = attritions[i];
-                    html += `<div class="attrition-arrow-container">
-                    <svg width="60" height="40" viewBox="0 0 60 40"><path d="M5 30 Q30 0 55 30" stroke="#888" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/><defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,8 L8,4 z" fill="#888"/></marker></defs></svg><div class="attrition-arrow-label">${attr > 0 ? '' : ''}${attr}%</div></div>`;
+            
+            const platformOrder = [
+                'x', 'facebook', 'instagram', 'youtube', 'tiktok'
+            ];
+            const platformLabels = {
+                'x': 'X',
+                'facebook': 'Facebook',
+                'instagram': 'Instagram',
+                'youtube': 'YouTube',
+                'tiktok': 'TikTok'
+            };
+            
+            let html = '<table class="attrition-table">';
+            
+            // Header row with step labels
+            html += '<tr><th></th>';
+            steps.forEach((step, index) => {
+                html += `<th>${step.label}</th>`;
+                if (index < steps.length - 1) {
+                    html += '<th class="attrition-header">↓</th>';
                 }
-            }
-            html += '</div>';
+            });
+            html += '</tr>';
+            
+            // Data rows for each platform
+            platformOrder.forEach(platform => {
+                if (!data.attrition[platform]) return;
+                
+                html += '<tr>';
+                html += `<td class="platform-name">${platformLabels[platform]}</td>`;
+                
+                // Get counts for this platform
+                let counts = [];
+                steps.forEach(step => {
+                    const count = data.attrition[platform][step.key] || 0;
+                    counts.push(count);
+                });
+                
+                // Calculate attrition percentages between steps
+                let attritions = [];
+                for (let i = 1; i < counts.length; i++) {
+                    if (counts[i-1] > 0) {
+                        let perc = Math.round(((counts[i-1] - counts[i]) / counts[i-1]) * 100);
+                        attritions.push(perc);
+                    } else {
+                        attritions.push(0);
+                    }
+                }
+                
+                // Add count cells and attrition cells
+                steps.forEach((step, index) => {
+                    html += `<td class="count-cell">${counts[index]}</td>`;
+                    if (index < steps.length - 1) {
+                        const attr = attritions[index];
+                        const attrClass = attr > 0 ? 'attrition-loss' : 'attrition-gain';
+                        html += `<td class="attrition-cell ${attrClass}">${attr > 0 ? '-' : '+'}${Math.abs(attr)}%</td>`;
+                    }
+                });
+                
+                html += '</tr>';
+            });
+            
+            html += '</table>';
+            
             const grid = document.querySelector('.attrition-grid');
             grid.innerHTML = html;
         }

@@ -100,4 +100,56 @@ th, td:first-child {
     display: block;
 }
 
+.attrition-table {
+    border: 1px solid #f6f6f6;
+    border-collapse: collapse;
+    margin: 20px 0;
+    width: 100%;
+    font-size: 0.8rem;
+}
+
+.attrition-table th,
+.attrition-table td {
+    border: 1px solid #f6f6f6;
+    padding: 4px 8px;
+    text-align: center;
+}
+
+.attrition-table th {
+    font-weight: 400;
+    color: #666;
+}
+
+.attrition-table .platform-name {
+    font-weight: 400;
+    color: #666;
+    /* text-align: left; */
+}
+
+.attrition-table .count-cell {
+    /* width: 80px; */
+}
+
+.attrition-table .attrition-header {
+    font-size: 0.8rem;
+    color: #666;
+    /* min-width: 40px; */
+}
+
+.attrition-table .attrition-cell {
+    font-size: 0.8rem;
+    font-weight: 600;
+    width: 50px;
+}
+
+.attrition-table .attrition-loss {
+    color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.attrition-table .attrition-gain {
+    color: #28a745;
+    background-color: #d4edda;
+}
+
 
