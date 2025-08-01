@@ -122,8 +122,8 @@
                                 if (percentage === 0) {
                                     cellStyle = 'background-color: #ffe6e6; color: #cc0000';
                                 } else if (percentage < 100) {
-                                    const opacity = percentage / 100;
-                                    cellStyle = `background-color: rgba(0, 0, 255, ${opacity})`;
+                                    const opacity = 1 - (percentage / 100);
+                                    cellStyle = `background-color: rgba(255, 166, 0, ${opacity})`;
                                 } else {
                                     cellStyle = 'background-color: #e6ffe6; color: #006600';
                                 }
